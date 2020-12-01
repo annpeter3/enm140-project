@@ -1,4 +1,5 @@
 import numpy as np
+import logging
 
 def apply_strategy(districts, week, effort, strat_p1, strat_p2):
     p1effort = player1_allocate(districts, effort, strat_p1)
@@ -6,14 +7,9 @@ def apply_strategy(districts, week, effort, strat_p1, strat_p2):
 
     districts = districts + p1effort + p2effort
 
-    print("Polls after week ", week + 1)
-    print(districts)
+    logging.debug("Polls after week %s: %s", week + 1, districts)
 
     return districts
-
-# Multiply all values in a list by -1
-def flip_list(list): 
-    return (-1)*list
 
 # Runs a strategy for player 1
 def player1_allocate(polls, effort, strat_p1):
@@ -24,9 +20,9 @@ def player1_allocate(polls, effort, strat_p1):
 # Player 2 allocation flips poll numbers before applying strategy so that the strategy doesn't need to be flipped
 # Then also flips the allocation before returning since player 2 wants negative numbers
 def player2_allocate(polls, effort, strat_p2):
-    p2pov = flip_list(polls)
-    p2allocation = strat_p2(p2pov, effort)
-    return flip_list(p2allocation)
+    p2_polls = (-1)*polls
+    p2allocation = strat_p2(p2_polls, effort)
+    return (-1)*p2allocation
 
 # P1 wins in states with a positive number
 def declare_winner(polls):
@@ -34,9 +30,12 @@ def declare_winner(polls):
     p2score = len(polls[polls < 0])
 
     if p1score == p2score:
-        print("DRAW")
+        logging.debug("DRAW")
+        return 0
     elif p1score > p2score:
-        print("P1 WON")
+        logging.debug("P1 WON")
+        return 1
     else:
-        print("P2 WON")
+        logging.debug("P2 WON")
+        return -1
 
