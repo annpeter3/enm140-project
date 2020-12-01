@@ -1,7 +1,13 @@
 import numpy as np
 
-# Save all strategy functions in a dict. Call a fcn using strategies['strat_x'](polls,effort).
-strategies = {}
+def strategies_as_dict():
+    # Save all strategy functions in a dict. Call a fcn using strategies['strat_x'](polls,effort).
+    strategies = {}
+    strategies['strat_x'] = strat_x
+    strategies['strat_y'] = strat_y
+    strategies['strat_zero'] = strat_zero
+
+    return strategies
 
 # This strategy puts the effort in the states where the player is losing by the smallest margin. (FLAW: if multiple states are equal, it will choose the first index encountered)
 def strat_x(polls, effort):
@@ -15,8 +21,6 @@ def strat_x(polls, effort):
 
     return allocation
 
-strategies['strat_x'] = strat_x
-
 # This strategy puts the effort in the states where the difference is the smalles. (FLAW: if multiple states are equally distant, it will choose the first index encountered)
 def strat_y(polls, effort):
     allocation = np.zeros(polls.shape)
@@ -29,11 +33,9 @@ def strat_y(polls, effort):
 
     return allocation
 
-strategies['strat_y'] = strat_y
-
 # Use to test smth vs a player that does nothing.
 def strat_zero(polls):
     return np.zeros(polls.shape)
 
-strategies['strat_zero'] = strat_zero
+
 
