@@ -29,7 +29,7 @@ def strat_x(polls):
     polls_after = polls.copy()
 
     for _ in range(effort_per_week):
-        min_dif_not_winning = np.argmax(np.nonzero(polls_after))
+        min_dif_not_winning = np.where(polls_after == max(polls_after[polls_after<=0]))[0][0] # Todo: does not work when all elements positive
         allocation[min_dif_not_winning] += 1
         polls_after[min_dif_not_winning] += 1
 
