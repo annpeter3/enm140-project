@@ -55,7 +55,7 @@ def user_input_strat(polls, effort):
     valid_input = False
     while not valid_input:
         usr_input = input('Enter allocation of {} effort for {} districs: '.format(effort, number_of_districts))
-        allocation = [int(num) for num in usr_input]
+        allocation = np.array([int(num) for num in usr_input])
 
         if len(allocation) == number_of_districts and sum(allocation) <= effort:
             valid_input = True
