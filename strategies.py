@@ -45,7 +45,7 @@ def strat_y(polls, effort):
 
 
 # Use to test smth vs a player that does nothing.
-def strat_zero(polls):
+def strat_zero(polls, effort):
     return np.zeros(polls.shape)
 
 
