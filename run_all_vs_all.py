@@ -56,30 +56,58 @@ for pair in all_combinations:
             results[pair[1]][pair[0]][1] += 1
             results[pair[0]][pair[1]][1] += 1
 
-# Visualise the nbr of wins and losses for each strategy:
-labels = strategies_dict.keys()
-x = np.arange(len(labels))
-width = 0.35
-
+# Visualisation of results:
 wins = np.zeros(len(strategies_dict.keys()))
 losses = np.zeros(len(strategies_dict.keys()))
+draws = np.zeros(len(strategies_dict.keys()))
+mean_payoff = np.zeros(len(strategies_dict.keys()))
 i = 0
 
 for key1 in results:
-    # Count nbr of wins and losses for strategy key1:
+    # Count nbr of wins, losses, and draws for strategy key1:
     for key2 in results[key1]:
-        wins[i] += results[key1][key2][0]
-        losses[i] += results[key1][key2][2]
+        #if key1 != key2: # add if don't want to incl strat against itself
+            wins[i] += results[key1][key2][0]
+            losses[i] += results[key1][key2][2]
+            draws[i] += results[key1][key2][1]
     
+    # Count mean payoff for strategy key1:
+    mean_payoff[i] = (wins[i]-losses[i])/(wins[i]+losses[i]+draws[i])
+
     i += 1
 
+# Visualise the nbr of wins, losses and draws for each strategy:
+labels = strategies_dict.keys()
+x = np.arange(len(labels))
+width = 0.2
 
 fig, ax = plt.subplots()
-rects1 = ax.bar(x - width/2, wins, width, label='Wins')
-rects2 = ax.bar(x + width/2, losses, width, label='Losses')
+rects1 = ax.bar(x - width, wins, width, label='Wins')
+rects2 = ax.bar(x + width, losses, width, label='Losses')
+rects3 = ax.bar(x, draws, width, label='Draws')
 
-ax.set_xticks(x)
-ax.set_xticklabels(labels)
+# Remove x-ticks:
+plt.tick_params(
+    axis='x',
+    which='both',
+    bottom=False,
+    top=False,
+    labelbottom=False
+)
+
 ax.legend()
+
+# Add the mean payoffs to the plot:
+table = plt.table(cellText=[mean_payoff],
+                      colLabels=list(labels),
+                      rowLabels=['Mean payoff'],
+                      rowColours=['lightgray'],
+                      colColours=len(mean_payoff)*['lightgray'],
+                      cellLoc='center',
+                      loc='bottom')
+table.scale(1, 1.5)
+plt.subplots_adjust(left=0.2, bottom=0.2)
+
+plt.title('Results per strategy')
 
 plt.show()
