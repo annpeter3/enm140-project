@@ -14,7 +14,7 @@ number_of_weeks = 5             # The number of Allocation phases until the winn
 number_of_districts = 10        # The number of voting districts
 T = 100                           # The number of times the simulation is repeated
 
-districts = np.array([5, 4, 3, 2, 1, -1, -2, -3, -4, -5])   # This variable counts the number of votes that player 1 has in each district 
+initial_districts = np.array([5, 4, 3, 2, 1, -1, -2, -3, -4, -5])   # This variable counts the number of votes that player 1 has in each district 
                                                             # minus the votes needed for a draw in a district.
                                                             # Hence a positive number means that player one wins the district
                                                             # This is could be a set of states where voter support is to 10-0, 9-1, 8-2, 7-3, 6-4, 4-6, 3-7.. etc 
@@ -34,6 +34,7 @@ for pair in all_combinations:
 
     # Run T election campaigns:
     for i in range(T):
+        districts = initial_districts
         logging.debug("Initial polls: %s", districts)
     
         # Run campaign:
