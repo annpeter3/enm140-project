@@ -8,6 +8,9 @@ def strategies_as_dict():
     strategies['strat_x'] = strat_x
     strategies['strat_y'] = strat_y
     strategies['strat_zero'] = strat_zero
+    strategies['strat_random_1'] = strat_random_1
+    strategies['strat_random_2'] = strat_random_2
+    strategies['strat_larger_margin'] = strat_larger_margin
 
     return strategies
 
@@ -18,7 +21,7 @@ def strat_x(polls, effort):
     polls_after = polls.copy()
 
     for _ in range(effort):
-        if min(polls_after <= 0):
+        if min(polls_after) <= 0:
             min_dif_not_winning_val = max([i for i in polls_after if i <= 0])
         else:
             min_dif_not_winning_val = min(polls_after)
@@ -61,5 +64,53 @@ def user_input_strat(polls, effort):
             valid_input = True
         else:
             print('Invalid allocation')
+
+    return allocation
+
+# Uniformly random allocation:
+def strat_random_1(polls, effort):
+    allocation = np.zeros(polls.shape)
+    idx = np.random.randint(allocation.shape, size=effort)
+
+    for i in range(effort):
+        allocation[idx[i]] += 1
+
+    return allocation
+
+# Uniformly random allocation over districts where loosing:
+def strat_random_2(polls, effort):
+    allocation = np.zeros(polls.shape)
+    polls_after = polls.copy()
+
+    for _ in range(effort):
+        if min(polls_after) <= 0:
+            negative_idx = np.where(polls_after <= 0)[0]
+            rnd = np.random.randint(negative_idx.shape, size = 1)
+            index = negative_idx[rnd[0]]
+        else:
+            index = np.random.randint(allocation.shape, size=1)
+
+        allocation[index] += 1
+        polls_after[index] += 1
+
+    return allocation
+
+# As strat_x but puts effort until the poll is effort/3:
+def strat_larger_margin(polls, effort):
+    allocation = np.zeros(polls.shape)
+    number_of_districts = len(allocation)
+    polls_after = polls.copy()
+
+    for _ in range(effort):
+        if len(polls_after[np.logical_and(polls_after < effort/3,polls_after >= 0)]) > 0:
+            larger_margin = max(polls_after[np.logical_and(polls_after < effort/3,polls_after >= 0)])
+        elif min(polls_after) <= 0:
+            larger_margin = max([i for i in polls_after if i <= 0])
+        else:
+            larger_margin = min(polls_after)
+
+        larger_margin_ind = rn.choice([i for i in range(number_of_districts) if polls_after[i] == larger_margin])
+        allocation[larger_margin_ind] += 1
+        polls_after[larger_margin_ind] += 1
 
     return allocation

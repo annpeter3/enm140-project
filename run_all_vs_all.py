@@ -97,6 +97,8 @@ plt.tick_params(
 
 ax.legend()
 
+mean_payoff = np.around(mean_payoff, decimals=3)
+
 # Add the mean payoffs to the plot:
 table = plt.table(cellText=[mean_payoff],
                       colLabels=list(labels),
@@ -106,6 +108,8 @@ table = plt.table(cellText=[mean_payoff],
                       cellLoc='center',
                       loc='bottom')
 table.scale(1, 1.5)
+table.auto_set_font_size(False)
+table.set_fontsize(15)
 plt.subplots_adjust(left=0.2, bottom=0.2)
 
 plt.title('Results per strategy')
