@@ -20,7 +20,7 @@ districts = np.array([5, 4, 3, 2, 1, -1, -2, -3, -4, -5])   # This variable coun
                                                             # (but we dont have to care about the absolute number of voters)
 
 # Load all available strategies:
-strategies = strategies.strategies_as_dict()
+strategies_dict = strategies.strategies_as_dict()
 
 # Run T election campaigns:
 results = np.zeros(T)
@@ -29,7 +29,7 @@ for i in range(T):
     
     # Run campaign for strat_x and strat_y:
     for t in range(number_of_weeks):
-        districts = campaign.apply_strategy(districts, t, effort_per_week, strategies['strat_x'], strategies['strat_y'])
+        districts = campaign.apply_strategy(districts, t, effort_per_week, strategies_dict['strat_x'], strategies_dict['strat_y']) # change to strategies.user_input_strat for manual input
     
     # Hold election
     results[i] = campaign.declare_winner(districts)
