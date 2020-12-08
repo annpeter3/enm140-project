@@ -18,7 +18,7 @@ def strat_x(polls, effort):
     polls_after = polls.copy()
 
     for _ in range(effort):
-        if min(polls_after <= 0):
+        if min(polls_after) <= 0:
             min_dif_not_winning_val = max([i for i in polls_after if i <= 0])
         else:
             min_dif_not_winning_val = min(polls_after)
