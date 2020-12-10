@@ -11,6 +11,7 @@ def strategies_as_dict():
     strategies['strat_random_1'] = strat_random_1
     strategies['strat_random_2'] = strat_random_2
     strategies['strat_larger_margin'] = strat_larger_margin
+    strategies['strat_mixed'] = strat_mixed
 
     return strategies
 
@@ -114,3 +115,12 @@ def strat_larger_margin(polls, effort):
         polls_after[larger_margin_ind] += 1
 
     return allocation
+
+# Mixed strategy:
+def strat_mixed(polls, effort):
+    rnd = np.random.rand()
+
+    if rnd < 0.2:
+        return strat_x(polls,effort)
+    else:
+        return strat_y(polls,effort)
