@@ -7,6 +7,8 @@ def apply_strategy(districts, week, effort, strat_p1, strat_p2):
 
     districts = districts + p1effort + p2effort
 
+    logging.debug("     Allocation player 1 week %s: %s", week + 1, p1effort)
+    logging.debug("     Allocation player 2 week %s: %s", week + 1, p2effort)
     logging.debug("Polls after week %s: %s", week + 1, districts)
 
     return districts
