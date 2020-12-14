@@ -20,7 +20,7 @@ def apply_strategy(districts, week, effort, strat_p1, strat_p2, measurement_erro
 def apply_measurement_error(districts, measurement_error):
     polls = districts.copy()
     for i in range(len(polls)):
-        polls[i] = polls[i] +  int(np.floor(np.random.normal(loc=0.0, scale=measurement_error)))
+        polls[i] = polls[i] +  int(np.trunc(np.random.normal(loc=0.0, scale=measurement_error)))
     return polls
 
 # Runs a strategy for player 1
