@@ -1,15 +1,27 @@
 import numpy as np
 import logging
 
-def apply_strategy(districts, week, effort, strat_p1, strat_p2):
-    p1effort = player1_allocate(districts, effort, strat_p1)
-    p2effort = player2_allocate(districts, effort, strat_p2)
+def apply_strategy(districts, week, effort, strat_p1, strat_p2, measurement_error=None):
+
+    if measurement_error is None:
+        p1effort = player1_allocate(districts, effort, strat_p1)
+        p2effort = player2_allocate(districts, effort, strat_p2)
+    else:
+        p1effort = player1_allocate(apply_measurement_error(districts, measurement_error), effort, strat_p1)
+        p2effort = player2_allocate(apply_measurement_error(districts, measurement_error), effort, strat_p2)
 
     districts = districts + p1effort + p2effort
 
     logging.debug("Polls after week %s: %s", week + 1, districts)
 
     return districts
+
+
+def apply_measurement_error(districts, measurement_error):
+    polls = districts.copy()
+    for i in range(len(polls)):
+        polls[i] = polls[i] +  int(np.floor(np.random.normal(loc=0.0, scale=measurement_error)))
+    return polls
 
 # Runs a strategy for player 1
 def player1_allocate(polls, effort, strat_p1):
