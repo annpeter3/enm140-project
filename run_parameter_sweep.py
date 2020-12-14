@@ -50,79 +50,89 @@ file.close()
 
 ######### Visualise ######################
 X,Y = np.meshgrid(effort_per_week_array, number_of_districts_array)
+vmin = np.min(mean_payoffs)
+vmax = np.max(mean_payoffs)
 
 fig = plt.figure()
 ax = fig.gca(projection='3d')
-surf1 = ax.plot_surface(X, Y, mean_payoffs[:,:,0], cmap='hot')
+surf1 = ax.plot_surface(X, Y, mean_payoffs[:,:,0], cmap='viridis', vmin=vmin, vmax=vmax)
+ax.set_zlim(vmin,vmax)
 fig.colorbar(surf1, shrink=0.5, aspect=5)
 
 ax.set_xlabel('Effort per week')
 ax.set_ylabel('Number of districts')
-ax.set_zlabel('Mean payoff strat_x')
+ax.set_zlabel('Mean payoff')
+plt.title('Parameter Sweep strat_x')
 plt.show(block=False)
 
 fig = plt.figure()
 ax = fig.gca(projection='3d')
-surf2 = ax.plot_surface(X, Y, mean_payoffs[:,:,1], cmap='hot')
+surf2 = ax.plot_surface(X, Y, mean_payoffs[:,:,1], cmap='viridis', vmin=vmin, vmax=vmax)
+ax.set_zlim(vmin,vmax)
 fig.colorbar(surf2, shrink=0.5, aspect=5)
 
 ax.set_xlabel('Effort per week')
 ax.set_ylabel('Number of districts')
-ax.set_zlabel('Mean payoff strat_y')
-
+ax.set_zlabel('Mean payoff')
+plt.title('Parameter Sweep strat_y')
 plt.show(block=False)
 
 fig = plt.figure()
 ax = fig.gca(projection='3d')
-surf2 = ax.plot_surface(X, Y, mean_payoffs[:,:,2], cmap='hot')
+surf2 = ax.plot_surface(X, Y, mean_payoffs[:,:,2], cmap='viridis', vmin=vmin, vmax=vmax)
+ax.set_zlim(vmin,vmax)
 fig.colorbar(surf2, shrink=0.5, aspect=5)
 
 ax.set_xlabel('Effort per week')
 ax.set_ylabel('Number of districts')
-ax.set_zlabel('Mean payoff strat_zero')
-
+ax.set_zlabel('Mean payoff')
+plt.title('Parameter Sweep strat_zero')
 plt.show(block=False)
 
 fig = plt.figure()
 ax = fig.gca(projection='3d')
-surf2 = ax.plot_surface(X, Y, mean_payoffs[:,:,3], cmap='hot')
+surf2 = ax.plot_surface(X, Y, mean_payoffs[:,:,3], cmap='viridis', vmin=vmin, vmax=vmax)
+ax.set_zlim(vmin,vmax)
 fig.colorbar(surf2, shrink=0.5, aspect=5)
 
 ax.set_xlabel('Effort per week')
 ax.set_ylabel('Number of districts')
-ax.set_zlabel('Mean payoff strat_random_1')
-
+ax.set_zlabel('Mean payoff')
+plt.title('Parameter Sweep strat_random_1')
 plt.show(block=False)
 
 fig = plt.figure()
 ax = fig.gca(projection='3d')
-surf2 = ax.plot_surface(X, Y, mean_payoffs[:,:,4], cmap='hot')
+surf2 = ax.plot_surface(X, Y, mean_payoffs[:,:,4], cmap='viridis', vmin=vmin, vmax=vmax)
+ax.set_zlim(vmin,vmax)
 fig.colorbar(surf2, shrink=0.5, aspect=5)
 
 ax.set_xlabel('Effort per week')
 ax.set_ylabel('Number of districts')
-ax.set_zlabel('Mean payoff strat_random_2')
-
+ax.set_zlabel('Mean payoff')
+plt.title('Parameter Sweep strat_random_2')
 plt.show(block=False)
 
 fig = plt.figure()
 ax = fig.gca(projection='3d')
-surf2 = ax.plot_surface(X, Y, mean_payoffs[:,:,5], cmap='hot')
+surf2 = ax.plot_surface(X, Y, mean_payoffs[:,:,5], cmap='viridis', vmin=vmin, vmax=vmax)
+ax.set_zlim(vmin,vmax)
 fig.colorbar(surf2, shrink=0.5, aspect=5)
 
 ax.set_xlabel('Effort per week')
 ax.set_ylabel('Number of districts')
-ax.set_zlabel('Mean payoff strat_larger_margin')
-
+ax.set_zlabel('Mean payoff')
+plt.title('Parameter Sweep strat_larger_margin')
 plt.show(block=False)
 
 fig = plt.figure()
 ax = fig.gca(projection='3d')
-surf2 = ax.plot_surface(X, Y, mean_payoffs[:,:,6], cmap='hot')
+surf2 = ax.plot_surface(X, Y, mean_payoffs[:,:,6], cmap='viridis', vmin=vmin, vmax=vmax)
+ax.set_zlim(vmin,vmax)
 fig.colorbar(surf2, shrink=0.5, aspect=5)
 
 ax.set_xlabel('Effort per week')
 ax.set_ylabel('Number of districts')
-ax.set_zlabel('Mean payoff strat_mixed')
-
+ax.set_zlabel('Mean payoff')
+plt.title('Parameter Sweep strat_mixed')
 plt.show()
