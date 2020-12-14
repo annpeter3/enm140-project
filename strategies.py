@@ -9,6 +9,7 @@ def strategies_as_dict():
     strategies['strat_y'] = strat_y
     strategies['strat_zero'] = strat_zero
     strategies['strat_y_but_defend_lead'] = strat_y_but_defend_lead
+    strategies['strat_x_but_defend_lead'] = strat_x_but_defend_lead
 
     return strategies
 
@@ -64,7 +65,7 @@ def strat_y_but_defend_lead(polls, effort):
 
     if am_i_winning_majority(polls):
         for _ in range(effort):
-            min_dif_winning_val = max([i for i in polls_after if i > 0])
+            min_dif_winning_val = min([i for i in polls_after if i > 0])
             min_dif_winning_ind = rn.choice([i for i in range(number_of_districts) if abs(polls_after[i]) == min_dif_winning_val])
             allocation[min_dif_winning_ind] += 1
             polls_after[min_dif_winning_ind] += 1
@@ -72,6 +73,34 @@ def strat_y_but_defend_lead(polls, effort):
     else:
         return strat_y(polls, effort)
 
+# This strategy will always play for a draw.
+def strat_x_but_defend_lead(polls, effort):
+    allocation = np.zeros(polls.shape)
+    number_of_districts = len(allocation)
+    polls_after = polls.copy()
+
+    def am_i_winning_half(polls):
+        wins = 0
+        for x in polls:
+            if x > 0:
+                wins += 1
+        if wins > len(polls) / 2:
+            return True
+        else :
+            return False
+
+    for _ in range(effort):
+        if am_i_winning_half(polls_after):
+            min_dif_winning_val = min([i for i in polls_after if i > 0])
+            min_dif_winning_ind = rn.choice([i for i in range(number_of_districts) if polls_after[i] == min_dif_winning_val])
+            allocation[min_dif_winning_ind] += 1
+            polls_after[min_dif_winning_ind] += 1
+        else:
+            min_dif_not_winning_val = max([i for i in polls_after if i <= 0])
+            min_dif_ind = rn.choice([i for i in range(number_of_districts) if polls_after[i] == min_dif_not_winning_val])
+            allocation[min_dif_ind] += 1
+            polls_after[min_dif_ind] += 1
+    return allocation
 
 
 
@@ -85,6 +114,7 @@ def user_input_strat(polls, effort):
     number_of_districts = len(polls)
     valid_input = False
     while not valid_input:
+        print(polls)
         usr_input = input('Enter allocation of {} effort for {} districs: '.format(effort, number_of_districts))
         allocation = np.array([int(num) for num in usr_input])
 
