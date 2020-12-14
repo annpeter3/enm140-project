@@ -8,6 +8,7 @@ def strategies_as_dict():
     strategies['strat_x'] = strat_x
     strategies['strat_y'] = strat_y
     strategies['strat_zero'] = strat_zero
+    strategies['strat_y_but_defend_lead'] = strat_y_but_defend_lead
 
     return strategies
 
@@ -42,6 +43,36 @@ def strat_y(polls, effort):
         polls_after[min_dif_ind] += 1
 
     return allocation
+
+# This strategy will attempt to defend a lead by spending effort in the districts where it's leading, if its leading in a majority of districts
+# If it is not winning in a majority of states, it will try to win new states by playing strat x
+def strat_y_but_defend_lead(polls, effort):
+
+    allocation = np.zeros(polls.shape)
+    number_of_districts = len(allocation)
+    polls_after = polls.copy()
+
+    def am_i_winning_majority(polls):
+        wins = 0
+        for x in polls:
+            if x > 0:
+                wins += 1
+        if wins > len(polls) / 2:
+            return True
+        else :
+            return False
+
+    if am_i_winning_majority(polls):
+        for _ in range(effort):
+            min_dif_winning_val = max([i for i in polls_after if i > 0])
+            min_dif_winning_ind = rn.choice([i for i in range(number_of_districts) if abs(polls_after[i]) == min_dif_winning_val])
+            allocation[min_dif_winning_ind] += 1
+            polls_after[min_dif_winning_ind] += 1
+        return allocation
+    else:
+        return strat_y(polls, effort)
+
+
 
 
 # Use to test smth vs a player that does nothing.
