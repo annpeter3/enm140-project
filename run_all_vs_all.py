@@ -9,7 +9,7 @@ import strategies
 logging.basicConfig(level=logging.INFO, format='%(message)s') # change between logging.DEBUG and logging.INFO for messages or not
 
 ######### Parameters ######################
-effort_per_week = 3             # The ammount of effort each campaign can allocate in a week.
+effort_per_week = 3             # The amount of effort each campaign can allocate in a week.
 number_of_weeks = 5             # The number of Allocation phases until the winner is declared.
 number_of_districts = 10        # The number of voting districts
 T = 100                           # The number of times the simulation is repeated
@@ -84,8 +84,8 @@ width = 0.2
 
 fig, ax = plt.subplots()
 rects1 = ax.bar(x - width, wins, width, label='Wins')
-rects2 = ax.bar(x + width, losses, width, label='Losses')
 rects3 = ax.bar(x, draws, width, label='Draws')
+rects2 = ax.bar(x + width, losses, width, label='Losses')
 
 # Remove x-ticks:
 plt.tick_params(
@@ -98,6 +98,8 @@ plt.tick_params(
 
 ax.legend()
 
+mean_payoff = np.around(mean_payoff, decimals=3)
+
 # Add the mean payoffs to the plot:
 table = plt.table(cellText=[mean_payoff],
                       colLabels=list(labels),
@@ -107,6 +109,8 @@ table = plt.table(cellText=[mean_payoff],
                       cellLoc='center',
                       loc='bottom')
 table.scale(1, 1.5)
+table.auto_set_font_size(False)
+table.set_fontsize(15)
 plt.subplots_adjust(left=0.2, bottom=0.2)
 
 plt.title('Results per strategy')
