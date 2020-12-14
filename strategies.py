@@ -12,6 +12,9 @@ def strategies_as_dict():
     strategies['strat_random_2'] = strat_random_2
     strategies['strat_larger_margin'] = strat_larger_margin
     strategies['strat_mixed'] = strat_mixed
+    strategies['strat_y_2'] = strat_y_2
+    strategies['strat_x_2'] = strat_x_2
+    strategies['strat_mixed_2'] = strat_mixed_2
 
     return strategies
 
@@ -47,6 +50,49 @@ def strat_y(polls, effort):
 
     return allocation
 
+def strat_y_2(polls, effort):
+    allocation = np.zeros_like(polls)
+    number_of_districts = len(allocation)
+    polls_after = polls.copy()
+
+    for _ in range(effort):
+        my_score = len(polls_after[polls_after > 0])
+
+        if my_score <= number_of_districts/2:
+            # If loosing or draw, play strat_y:
+            allocation_strat_y = strat_y(polls_after,1).astype(int)
+            allocation += allocation_strat_y
+            polls_after += allocation_strat_y
+        else:
+            # If winning, put effort in the districts where winning with the smallest margin:
+            min_dif_winning_val = min([i for i in polls_after if i >= 0])
+            min_dif_winning_ind = rn.choice([i for i in range(number_of_districts) if abs(polls_after[i]) == min_dif_winning_val])
+            allocation[min_dif_winning_ind] += 1
+            polls_after[min_dif_winning_ind] += 1
+        
+    return allocation
+
+def strat_x_2(polls, effort):
+    allocation = np.zeros_like(polls)
+    number_of_districts = len(allocation)
+    polls_after = polls.copy()
+
+    for _ in range(effort):
+        my_score = len(polls_after[polls_after > 0])
+
+        if my_score <= number_of_districts/2:
+            # If loosing or draw, play strat_x:
+            allocation_strat_x = strat_x(polls_after,1).astype(int)
+            allocation += allocation_strat_x
+            polls_after += allocation_strat_x
+        else:
+            # If winning, put effort in the districts where winning with the smallest margin:
+            min_dif_winning_val = min([i for i in polls_after if i >= 0])
+            min_dif_winning_ind = rn.choice([i for i in range(number_of_districts) if abs(polls_after[i]) == min_dif_winning_val])
+            allocation[min_dif_winning_ind] += 1
+            polls_after[min_dif_winning_ind] += 1
+    
+    return allocation
 
 # Use to test smth vs a player that does nothing.
 def strat_zero(polls, effort):
@@ -124,3 +170,11 @@ def strat_mixed(polls, effort):
         return strat_x(polls,effort)
     else:
         return strat_y(polls,effort)
+
+def strat_mixed_2(polls, effort):
+    rnd = np.random.rand()
+
+    if rnd < 0.5:
+        return strat_x_2(polls, effort)
+    else:
+        return strat_y_2(polls, effort)    
