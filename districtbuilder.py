@@ -27,6 +27,3 @@ def build(number_of_districts, shape, amplitude):
             else:
                 districts[i] = - districts[- (i + 1)]
     return districts
-
-
-print(build(100, "cosine", 20))
