@@ -29,9 +29,9 @@ for i in range(T):
     districts = initial_districts
     logging.debug("Initial polls: %s", districts)
     
-    # Run campaign for strat_x and strat_y:
+    # Run campaign for two strategies:
     for t in range(number_of_weeks):
-        districts = campaign.apply_strategy(districts, t, effort_per_week, strategies_dict['strat_x_but_defend_lead'], strategies_dict['strat_y']) # change to strategies.user_input_strat for manual input
+        districts = campaign.apply_strategy(districts, t, effort_per_week, strategies_dict['min_losing'], strategies_dict['min_diff']) # change to strategies.user_input_strat for manual input
         
     # Hold election
     results[i] = campaign.declare_winner(districts)
