@@ -3,17 +3,18 @@ import logging
 
 import campaign
 import strategies
+import districtbuilder as db
 
 logging.basicConfig(level=logging.INFO, format='%(message)s') # change between logging.DEBUG and logging.INFO for messages or not
 
 
 ######### Parameters ######################
-effort_per_week = 3             # The ammount of effort each campaign can allocate in a week.
+effort_per_week = 10             # The ammount of effort each campaign can allocate in a week.
 number_of_weeks = 5             # The number of Allocation phases until the winner is declared.
 number_of_districts = 10        # The number of voting districts
 T = 1000                           # The number of times the simulation is repeated
 
-initial_districts = np.array([5, 4, 3, 2, 1, -1, -2, -3, -4, -5])   # This variable counts the number of votes that player 1 has in each district 
+initial_districts = db.build(50, "cosine", 10)   # This variable counts the number of votes that player 1 has in each district 
                                                                     # minus the votes needed for a draw in a district.
                                                                     # Hence a positive number means that player one wins the district
                                                                     # This is could be a set of states where voter support is to 10-0, 9-1, 8-2, 7-3, 6-4, 4-6, 3-7.. etc 
