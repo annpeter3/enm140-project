@@ -7,10 +7,10 @@ def strategies_as_dict():
     strategies = {}
     strategies['Min losing'] = strat_min_losing
     strategies['Min diff'] = strat_min_diff
-    strategies['Zero'] = strat_zero
+    #strategies['Zero'] = strat_zero
     strategies['Min losing + defend lead'] = strat_min_losing_and_defend_lead
     strategies['Min diff + defend lead'] = strat_min_diff_and_defend_lead
-    strategies['Random_1'] = strat_random_1
+    #strategies['Random_1'] = strat_random_1
     strategies['Random_2'] = strat_random_2
     strategies['larger_margin'] = strat_larger_margin
     strategies['Mixed_1'] = strat_mixed

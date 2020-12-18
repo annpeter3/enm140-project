@@ -14,9 +14,9 @@ logging.basicConfig(level=logging.INFO, format='%(message)s') # change between l
 ######### Parameters ######################
 effort_per_week_array = np.arange(start=1, stop=20)            # The amount of effort each campaign can allocate in a week.
 number_of_districts_array = np.arange(start=1, stop=20)        # The number of voting districts
-number_of_weeks = 10                                           # The number of Allocation phases until the winner is declared.
+number_of_weeks = 15                                           # The number of Allocation phases until the winner is declared.
 number_of_weeks_array = np.arange(start=1,stop=20)
-T = 1                                                          # The number of times the simulation is repeated
+T = 100                                                          # The number of times the simulation is repeated
 
 ######### Main loop ######################
 # Load all available strategies:
@@ -45,29 +45,34 @@ for effort_per_week in effort_per_week_array:
 
 # Run sweep over weeks:
 logging.info("Start sweep over weeks")
-k = 0
 number_of_districts = 10
-effort_per_week = 3
+effort_per_week = 10
 strategies_dict = strategies.strategies_as_dict()
-mean_payoffs_weeks = np.zeros((number_of_weeks_array.shape[0], len(strategies_dict)))
+initial_polls_distribution = ['stair', 'flat', 'polarized', 'cosine']
+mean_payoffs_weeks = np.zeros((number_of_weeks_array.shape[0], len(initial_polls_distribution), len(strategies_dict)))
 
-for number_of_weeks in number_of_weeks_array:
-    initial_districts = db.build(number_of_districts, "flat", 0)
-    strategies_dict = strategies.strategies_as_dict()
+l = 0
+for distribution in initial_polls_distribution:
+    k = 0
+    logging.info("Running for initial distrbution %s", distribution)
+    for number_of_weeks in number_of_weeks_array:
+        initial_districts = db.build(number_of_districts, "flat", 10)
+        strategies_dict = strategies.strategies_as_dict()
 
-    results = run_all_vs_all_fcn(strategies_dict, effort_per_week, number_of_weeks, number_of_districts, T, initial_districts)
-    _, _, _, mean_payoffs_weeks[k,:] = process_results(results)
+        results = run_all_vs_all_fcn(strategies_dict, effort_per_week, number_of_weeks, number_of_districts, T, initial_districts)
+        _, _, _, mean_payoffs_weeks[k,l,:] = process_results(results)
 
-    k += 1
+        k += 1
 
+    l += 1
 
-# # Run sweep over initial polls distribution:
+# Run sweep over initial polls distribution:
 logging.info("Start sweep over initial distribution")
 m = 0
 initial_polls_distribution = ['stair', 'flat', 'polarized', 'cosine']
 number_of_districts = 10
 effort_per_week = 3
-number_of_weeks = 10
+number_of_weeks = 15
 strategies_dict = strategies.strategies_as_dict()
 mean_payoffs_polls = np.zeros((len(initial_polls_distribution), len(strategies_dict)))
 
@@ -126,10 +131,38 @@ for i in range(len(labels)):
 # Number of weeks:
 fig = plt.figure()
 for i in range(len(labels)):
-    plt.plot(number_of_weeks_array, mean_payoffs_weeks[:,i], label=labels[i])
+    plt.plot(number_of_weeks_array, mean_payoffs_weeks[:,0,i], label=labels[i])
 plt.xlabel('Number of weeks')
 plt.ylabel('Mean payoff')
 plt.legend()
+plt.title("Stair")
+plt.show(block=False)
+
+fig = plt.figure()
+for i in range(len(labels)):
+    plt.plot(number_of_weeks_array, mean_payoffs_weeks[:,1,i], label=labels[i])
+plt.xlabel('Number of weeks')
+plt.ylabel('Mean payoff')
+plt.legend()
+plt.title('Flat')
+plt.show(block=False)
+
+fig = plt.figure()
+for i in range(len(labels)):
+    plt.plot(number_of_weeks_array, mean_payoffs_weeks[:,2,i], label=labels[i])
+plt.xlabel('Number of weeks')
+plt.ylabel('Mean payoff')
+plt.legend()
+plt.title('Polarized')
+plt.show(block=False)
+
+fig = plt.figure()
+for i in range(len(labels)):
+    plt.plot(number_of_weeks_array, mean_payoffs_weeks[:,3,i], label=labels[i])
+plt.xlabel('Number of weeks')
+plt.ylabel('Mean payoff')
+plt.legend()
+plt.title('Cosine')
 plt.show(block=False)
 
 # Initial polls distribution:
@@ -143,7 +176,8 @@ plt.bar(x + 3/2*width, mean_payoffs_polls[3,:], width, label=initial_polls_distr
 plt.ylabel('Mean payoff')
 plt.legend()
 plt.axhline(0,color='black')
-# TODO: add plt.axvline between the strategies?
+for loc in x:
+    plt.axvline(loc+2.5*width,color='black')
 plt.show(block=False)
 
 plt.show() # to block the script
