@@ -11,7 +11,7 @@ logging.basicConfig(level=logging.INFO, format='%(message)s') # change between l
 effort_per_week = 3             # The ammount of effort each campaign can allocate in a week.
 number_of_weeks = 5             # The number of Allocation phases until the winner is declared.
 number_of_districts = 10        # The number of voting districts
-T = 2                           # The number of times the simulation is repeated
+T = 1000                           # The number of times the simulation is repeated
 
 initial_districts = np.array([5, 4, 3, 2, 1, -1, -2, -3, -4, -5])   # This variable counts the number of votes that player 1 has in each district 
                                                                     # minus the votes needed for a draw in a district.
@@ -29,10 +29,10 @@ for i in range(T):
     districts = initial_districts
     logging.debug("Initial polls: %s", districts)
     
-    # Run campaign for strat_x and strat_y:
+    # Run campaign for two strategies:
     for t in range(number_of_weeks):
-        districts = campaign.apply_strategy(districts, t, effort_per_week, strategies_dict['strat_x'], strategies_dict['strat_y']) # change to strategies.user_input_strat for manual input
-    
+        districts = campaign.apply_strategy(districts, t, effort_per_week, strategies_dict['min_losing'], strategies_dict['min_diff']) # change to strategies.user_input_strat for manual input
+        
     # Hold election
     results[i] = campaign.declare_winner(districts)
 

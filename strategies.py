@@ -5,18 +5,22 @@ import random as rn
 def strategies_as_dict():
     # Save all strategy functions in a dict. Call a fcn using strategies['strat_x'](polls,effort).
     strategies = {}
-    strategies['strat_x'] = strat_x
-    strategies['strat_y'] = strat_y
-    strategies['strat_zero'] = strat_zero
-    strategies['strat_random_1'] = strat_random_1
-    strategies['strat_random_2'] = strat_random_2
-    strategies['strat_larger_margin'] = strat_larger_margin
-    strategies['strat_mixed'] = strat_mixed
+    strategies['Min losing'] = strat_min_losing
+    strategies['Min diff'] = strat_min_diff
+    strategies['Zero'] = strat_zero
+    strategies['Min losing + defend lead'] = strat_min_losing_and_defend_lead
+    strategies['Min diff + defend lead'] = strat_min_diff_and_defend_lead
+    strategies['Random_1'] = strat_random_1
+    strategies['Random_2'] = strat_random_2
+    strategies['larger_margin'] = strat_larger_margin
+    strategies['Mixed_1'] = strat_mixed
+    strategies['Mixed_2'] = strat_mixed_2
+    strategies['Effort'] = strat_effort
 
     return strategies
 
 # This strategy puts the effort in the states where the player is losing by the smallest margin.
-def strat_x(polls, effort):
+def strat_min_losing(polls, effort): # aka strat_x
     allocation = np.zeros(polls.shape)
     number_of_districts = len(allocation)
     polls_after = polls.copy()
@@ -34,7 +38,7 @@ def strat_x(polls, effort):
     return allocation
 
 # This strategy puts the effort in the states where the difference is the smalles.
-def strat_y(polls, effort):
+def strat_min_diff(polls, effort): # aka strat_y
     allocation = np.zeros(polls.shape)
     number_of_districts = len(allocation)
     polls_after = polls.copy()
@@ -47,6 +51,54 @@ def strat_y(polls, effort):
 
     return allocation
 
+# This strategy will attempt to defend a lead by spending effort in the districts where it's leading, if its leading in a majority of districts
+# If it is not winning in a majority of states, it will try to win new states by playing strat_min_diff
+def strat_min_diff_and_defend_lead(polls, effort):
+    allocation = np.zeros_like(polls)
+    number_of_districts = len(allocation)
+    polls_after = polls.copy()
+
+    for _ in range(effort):
+        my_score = len(polls_after[polls_after > 0]) # If do this outside the for loop -> worse result
+
+        if my_score <= number_of_districts/2:
+            # If loosing or draw, play strat_min_diff:
+            allocation_strat_min_diff = strat_min_diff(polls_after,1).astype(int)
+            allocation += allocation_strat_min_diff
+            polls_after += allocation_strat_min_diff
+        else:
+            # If winning, put effort in the districts where winning with the smallest margin:
+            min_dif_winning_val = min([i for i in polls_after if i >= 0])
+            min_dif_winning_ind = rn.choice([i for i in range(number_of_districts) if abs(polls_after[i]) == min_dif_winning_val])
+            allocation[min_dif_winning_ind] += 1
+            polls_after[min_dif_winning_ind] += 1
+        
+    return allocation
+
+
+# This strategy will attempt to defend a lead by spending effort in the districts where it's leading, if its leading in a majority of districts
+# If it is not winning in a majority of states, it will try to win new states by playing strat_min_losing
+def strat_min_losing_and_defend_lead(polls, effort):
+    allocation = np.zeros_like(polls)
+    number_of_districts = len(allocation)
+    polls_after = polls.copy()
+
+    for _ in range(effort):
+        my_score = len(polls_after[polls_after > 0]) # # If do this outside the for loop -> worse result
+
+        if my_score <= number_of_districts/2:
+            # If loosing or draw, play strat_min_losing:
+            allocation_strat_min_losing = strat_min_losing(polls_after,1).astype(int)
+            allocation += allocation_strat_min_losing
+            polls_after += allocation_strat_min_losing
+        else:
+            # If winning, put effort in the districts where winning with the smallest margin:
+            min_dif_winning_val = min([i for i in polls_after if i >= 0])
+            min_dif_winning_ind = rn.choice([i for i in range(number_of_districts) if abs(polls_after[i]) == min_dif_winning_val])
+            allocation[min_dif_winning_ind] += 1
+            polls_after[min_dif_winning_ind] += 1
+    
+    return allocation
 
 # Use to test smth vs a player that does nothing.
 def strat_zero(polls, effort):
@@ -58,6 +110,7 @@ def user_input_strat(polls, effort):
     number_of_districts = len(polls)
     valid_input = False
     while not valid_input:
+        print(polls)
         usr_input = input('Enter allocation of {} effort for {} districs: '.format(effort, number_of_districts))
         allocation = np.array([int(num) for num in usr_input])
 
@@ -121,6 +174,41 @@ def strat_mixed(polls, effort):
     rnd = np.random.rand()
 
     if rnd < 0.2:
-        return strat_x(polls,effort)
+        return strat_min_losing(polls,effort)
     else:
-        return strat_y(polls,effort)
+        return strat_min_diff(polls,effort)
+
+def strat_mixed_2(polls, effort):
+    rnd = np.random.rand()
+
+    if rnd < 0.5:
+        return strat_min_losing_and_defend_lead(polls, effort)
+    else:
+        return strat_min_diff_and_defend_lead(polls, effort)
+
+# A strategy that puts all its effort in one district each round and takes into account if it is currently winning or not.
+def strat_effort(polls, effort):
+    allocation = np.zeros_like(polls)
+    number_of_districts = len(allocation)
+    my_score = len(polls[polls > 0])
+
+    if my_score <= number_of_districts/2:
+        # Loosing
+        if polls[np.logical_and(polls <= 0, polls > -effort)].shape[0] >= 1:
+            # Put all where is loosing by the most (but which is smaller than effort)
+            max_loosing = np.min(polls[np.logical_and(polls <= 0, polls > -effort)]) 
+            max_loosing_ind = rn.choice([i for i in range(number_of_districts) if polls[i] == max_loosing])
+            allocation[max_loosing_ind] = effort   
+        else:
+            # Is loosing by something larger than effort everywhere, place all where is loosing by the least:
+            min_loosing = np.min(polls[polls <= 0])
+            min_loosing_ind = rn.choice([i for i in range(number_of_districts) if polls[i] == min_loosing])
+            allocation[min_loosing_ind] = effort 
+    else:
+        # Winning
+        # Put all effort where is winning by the smallest margin
+        min_winning = np.min(polls[polls >= 0])
+        min_winning_ind = rn.choice([i for i in range(number_of_districts) if polls[i] == min_winning])
+        allocation[min_winning_ind] = effort
+
+    return allocation
