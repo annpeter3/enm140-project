@@ -45,7 +45,7 @@ def param_sweep_effort_districts():
             _, _, _, mean_payoffs[i,j,:] = process_results(results)
 
             j += 1
-    
+        
         logging.info("Iteration %d of %d finished", i, len(effort_per_week_array))
 
         i += 1
@@ -77,7 +77,7 @@ def param_sweep_weeks(initial_polls_distribution):
 
         l += 1
     
-    with open('parameter-sweep-results-3.txt', 'wb') as f:
+    with open('parameter-sweep-results-weeks.txt', 'wb') as f:
         pickle.dump(mean_payoffs_weeks, f)
 
     return mean_payoffs_weeks
@@ -99,7 +99,7 @@ def param_sweep_initial_polls(initial_polls_distribution):
         m += 1
 
     
-    with open('parameter-sweep-results-4.txt', 'wb') as f:
+    with open('parameter-sweep-results-polls.txt', 'wb') as f:
         pickle.dump(mean_payoffs_polls, f)
 
     return mean_payoffs_polls
@@ -114,13 +114,13 @@ mean_payoffs_polls = param_sweep_initial_polls(initial_polls_distribution)
 
 
 # To access the saved results, do:
-# with open('parameter-sweep-results-2.txt', 'rb') as f:
-#     mean_payoffs = pickle.load(f)
+# with open('parameter-sweep-results-effort-districts.txt', 'rb') as f:
+#      mean_payoffs = pickle.load(f)
 
-# with open('parameter-sweep-results-3.txt', 'rb') as f:
+# with open('parameter-sweep-results-weeks.txt', 'rb') as f:
 #     mean_payoffs_weeks = pickle.load(f)
 
-# with open('parameter-sweep-results-4.txt', 'rb') as f:
+# with open('parameter-sweep-results-polls.txt', 'rb') as f:
 #     mean_payoffs_polls = pickle.load(f)
 
 
@@ -131,6 +131,15 @@ labels = list(strategies_dict.keys())
 X,Y = np.meshgrid(effort_per_week_array, number_of_districts_array)
 vmin = np.min(mean_payoffs)
 vmax = np.max(mean_payoffs)
+
+# Font sizes:
+plt.rc('font', size=12)          
+plt.rc('axes', titlesize=15)     
+plt.rc('axes', labelsize=18)    
+plt.rc('xtick', labelsize=18)   
+plt.rc('ytick', labelsize=12)    
+plt.rc('legend', fontsize=12)    
+plt.rc('axes', titlesize=25)
 
 for i in range(len(labels)):
     fig = plt.figure()
@@ -145,6 +154,8 @@ for i in range(len(labels)):
     plt.title('Parameter Sweep ' + labels[i])
     plt.show(block=False)
 
+plt.show(block=False)
+
 # Number of weeks:
 for j in range(len(initial_polls_distribution)):
     fig = plt.figure()
@@ -153,22 +164,42 @@ for j in range(len(initial_polls_distribution)):
     plt.xlabel('Number of weeks')
     plt.ylabel('Mean payoff')
     plt.legend()
-    plt.title(initial_polls_distribution[j])
+    plt.title('Initial distribution is ' + initial_polls_distribution[j] + ', effort = ' + str(effort_per_week) + ', districts = ' + str(number_of_districts))
     plt.show(block=False)
 
 # Initial polls distribution:
 x = np.arange(len(labels))
 width = 0.2
 fig = plt.figure()
-plt.bar(x - 3/2*width, mean_payoffs_polls[0,:], width, label=initial_polls_distribution[0], tick_label=labels)
+ax = fig.add_subplot(1, 1, 1)
+plt.bar(x - 3/2*width, mean_payoffs_polls[0,:], width, label=initial_polls_distribution[0])
 plt.bar(x - 1/2*width, mean_payoffs_polls[1,:], width, label=initial_polls_distribution[1], tick_label=labels)
-plt.bar(x + 1/2*width, mean_payoffs_polls[2,:], width, label=initial_polls_distribution[2], tick_label=labels)
-plt.bar(x + 3/2*width, mean_payoffs_polls[3,:], width, label=initial_polls_distribution[3], tick_label=labels)
+plt.bar(x + 1/2*width, mean_payoffs_polls[2,:], width, label=initial_polls_distribution[2])
+plt.bar(x + 3/2*width, mean_payoffs_polls[3,:], width, label=initial_polls_distribution[3])
 plt.ylabel('Mean payoff')
+plt.xticks(rotation=50)
+for label in ax.get_xmajorticklabels():
+    label.set_horizontalalignment("right")
+fig.subplots_adjust(bottom=0.3)
 plt.legend()
 plt.axhline(0,color='black')
 for loc in x:
     plt.axvline(loc+2.5*width,color='black')
 plt.show(block=False)
+
+width = 0.4
+for i in range(len(initial_polls_distribution)):
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1)
+    rects = plt.bar(x, mean_payoffs_polls[i,:], width, label=initial_polls_distribution[i], tick_label=labels, color='C' + str(i))
+    plt.axhline(0,color='black')
+    plt.title('Initial distribution: ' + initial_polls_distribution[i])
+    ax.set_ylim(-0.85,0.75)
+    plt.xticks(rotation=50)
+    for label in ax.get_xmajorticklabels():
+        label.set_horizontalalignment("right")
+    fig.subplots_adjust(bottom=0.3)
+    plt.ylabel('Mean payoff')
+
 
 plt.show() # to block the script
