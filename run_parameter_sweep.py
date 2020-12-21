@@ -32,23 +32,17 @@ def param_sweep_effort_districts():
     strategies_dict = strategies.strategies_as_dict()
     mean_payoffs = np.zeros((effort_per_week_array.shape[0], number_of_districts_array.shape[0], len(strategies_dict)))
     
-    i = 0 
-    for effort_per_week in effort_per_week_array:
-        j = 0
-    
-        for number_of_districts in number_of_districts_array:
+    for i, effort_per_week in enumerate(effort_per_week_array):
+
+        for j, number_of_districts in enumerate(number_of_districts_array):
 
             initial_districts = db.build(number_of_districts, "flat", 0)
             strategies_dict = strategies.strategies_as_dict()
 
             results = run_all_vs_all_fcn(strategies_dict, effort_per_week, number_of_weeks, number_of_districts, T, initial_districts)
             _, _, _, mean_payoffs[i,j,:] = process_results(results)
-
-            j += 1
         
         logging.info("Iteration %d of %d finished", i, len(effort_per_week_array))
-
-        i += 1
 
     # Save the result:
     with open('parameter-sweep-results-effort-districts.txt', 'wb') as f:
@@ -62,20 +56,15 @@ def param_sweep_weeks(initial_polls_distribution):
     strategies_dict = strategies.strategies_as_dict()
     mean_payoffs_weeks = np.zeros((number_of_weeks_array.shape[0], len(initial_polls_distribution), len(strategies_dict)))
 
-    l = 0
-    for distribution in initial_polls_distribution:
-        k = 0
+    for l, distribution in enumerate(initial_polls_distribution):
         logging.info("Running for initial distrbution %s", distribution)
-        for number_of_weeks in number_of_weeks_array:
+
+        for k, number_of_weeks in enumerate(number_of_weeks_array):
             initial_districts = db.build(number_of_districts, "flat", 10)
             strategies_dict = strategies.strategies_as_dict()
 
             results = run_all_vs_all_fcn(strategies_dict, effort_per_week, number_of_weeks, number_of_districts, T, initial_districts)
             _, _, _, mean_payoffs_weeks[k,l,:] = process_results(results)
-
-            k += 1
-
-        l += 1
     
     with open('parameter-sweep-results-weeks.txt', 'wb') as f:
         pickle.dump(mean_payoffs_weeks, f)
@@ -85,19 +74,15 @@ def param_sweep_weeks(initial_polls_distribution):
 # Run sweep over initial polls distribution:
 def param_sweep_initial_polls(initial_polls_distribution):
     logging.info("Start sweep over initial distribution")
-    m = 0
     strategies_dict = strategies.strategies_as_dict()
     mean_payoffs_polls = np.zeros((len(initial_polls_distribution), len(strategies_dict)))
 
-    for distr in initial_polls_distribution:
+    for m, distr in enumerate(initial_polls_distribution):
         initial_districts = db.build(number_of_districts, distr, 10)
         strategies_dict = strategies.strategies_as_dict()
 
         results = run_all_vs_all_fcn(strategies_dict, effort_per_week, number_of_weeks, number_of_districts, T, initial_districts)
         _, _, _, mean_payoffs_polls[m,:] = process_results(results)
-
-        m += 1
-
     
     with open('parameter-sweep-results-polls.txt', 'wb') as f:
         pickle.dump(mean_payoffs_polls, f)
