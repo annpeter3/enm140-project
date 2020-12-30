@@ -1,10 +1,30 @@
 import numpy as np
 import logging
+import random as rn
 
-def apply_strategy(districts, week, effort, strat_p1, strat_p2):
+
+def uncertain_effect(allocation):
+    flip = min(allocation) < 0
+    
+    if flip:
+        allocation *= (-1)
+
+    new_allocation = np.array([round(rn.triangular(0, int(allocation[i]), int(allocation[i]))) for i in range(len(allocation))])
+
+    if flip:
+        new_allocation *= (-1)
+
+    return new_allocation
+
+
+def apply_strategy(districts, week, effort, strat_p1, strat_p2, effort_uncertainty = False):
     p1effort = player1_allocate(districts, effort, strat_p1)
     p2effort = player2_allocate(districts, effort, strat_p2)
 
+    if effort_uncertainty:
+        p1effort = uncertain_effect(p1effort)
+        p2effort = uncertain_effect(p2effort)
+            
     districts = districts + p1effort + p2effort
 
     logging.debug("Polls after week %s: %s", week + 1, districts)

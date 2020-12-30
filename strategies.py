@@ -124,7 +124,7 @@ def user_input_strat(polls, effort):
 # Uniformly random allocation:
 def strat_random_1(polls, effort):
     allocation = np.zeros(polls.shape)
-    idx = np.random.randint(allocation.shape, size=effort)
+    idx = np.random.randint(len(allocation), size=effort)
 
     for i in range(effort):
         allocation[idx[i]] += 1
@@ -139,10 +139,10 @@ def strat_random_2(polls, effort):
     for _ in range(effort):
         if min(polls_after) <= 0:
             negative_idx = np.where(polls_after <= 0)[0]
-            rnd = np.random.randint(negative_idx.shape, size = 1)
+            rnd = np.random.randint(len(negative_idx), size = 1)
             index = negative_idx[rnd[0]]
         else:
-            index = np.random.randint(allocation.shape, size=1)
+            index = np.random.randint(len(allocation), size=1)
 
         allocation[index] += 1
         polls_after[index] += 1

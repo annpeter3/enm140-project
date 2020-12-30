@@ -9,10 +9,10 @@ import strategies
 logging.basicConfig(level=logging.INFO, format='%(message)s') # change between logging.DEBUG and logging.INFO for messages or not
 
 ######### Parameters ######################
-effort_per_week = 3             # The amount of effort each campaign can allocate in a week.
-number_of_weeks = 5             # The number of Allocation phases until the winner is declared.
-number_of_districts = 10        # The number of voting districts
-T = 100                           # The number of times the simulation is repeated
+effort_per_week = 10             # The amount of effort each campaign can allocate in a week.
+number_of_weeks = 15             # The number of Allocation phases until the winner is declared.
+number_of_districts = 30        # The number of voting districts
+T = 10                  # The number of times the simulation is repeated
 
 initial_districts = np.array([5, 4, 3, 2, 1, -1, -2, -3, -4, -5])   # This variable counts the number of votes that player 1 has in each district 
                                                             # minus the votes needed for a draw in a district.
@@ -43,7 +43,7 @@ def run_all_vs_all_fcn(strategies_dict, effort_per_week, number_of_weeks, number
     
             # Run campaign:
             for t in range(number_of_weeks):
-                districts = campaign.apply_strategy(districts, t, effort_per_week, p1_strat, p2_strat)
+                districts = campaign.apply_strategy(districts, t, effort_per_week, p1_strat, p2_strat, True)
     
             # Hold election
             result = campaign.declare_winner(districts)

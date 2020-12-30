@@ -32,7 +32,7 @@ for i in range(T):
     
     # Run campaign for two strategies:
     for t in range(number_of_weeks):
-        districts = campaign.apply_strategy(districts, t, effort_per_week, strategies_dict['min_losing'], strategies_dict['min_diff']) # change to strategies.user_input_strat for manual input
+        districts = campaign.apply_strategy(districts, t, effort_per_week, strategies_dict['Min losing'], strategies_dict['Min diff']) # change to strategies.user_input_strat for manual input
         
     # Hold election
     results[i] = campaign.declare_winner(districts)
