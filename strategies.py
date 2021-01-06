@@ -10,6 +10,7 @@ def strategies_as_dict():
     strategies['Zero'] = strat_zero
     strategies['Min losing + defend lead'] = strat_min_losing_and_defend_lead
     strategies['Min diff + defend lead'] = strat_min_diff_and_defend_lead
+    strategies['Counter'] = strat_assume_opponent_is_min_losing_and_defend_lead
     strategies['Random_1'] = strat_random_1
     strategies['Random_2'] = strat_random_2
     strategies['larger_margin'] = strat_larger_margin
@@ -99,6 +100,40 @@ def strat_min_losing_and_defend_lead(polls, effort):
             polls_after[min_dif_winning_ind] += 1
     
     return allocation
+
+
+# This strat will assume the opponent is doing the min losing defend lead strat, and calcualte its oppnents moves
+# Then make its own moves
+def strat_assume_opponent_is_min_losing_and_defend_lead(polls, effort):
+    allocation = np.zeros_like(polls)
+    number_of_districts = len(allocation)
+    polls_after = polls.copy()
+    poll_after = polls_after * -1
+
+    for _ in range(effort):
+        my_score = len(polls_after[polls_after > 0]) # # If do this outside the for loop -> worse result
+
+        if my_score <= number_of_districts/2:
+            # If loosing or draw, play strat_min_losing:
+            for _ in range(effort):
+                if min(polls_after) <= 0:
+                    min_dif_not_winning_val = max([i for i in polls_after if i <= 0])
+                else:
+                    min_dif_not_winning_val = min(polls_after)
+                if (polls_after == min_dif_not_winning_val).sum() == 1:
+                    min_dif_not_winning_ind = rn.choice([i for i in range(number_of_districts) if polls_after[i] == min_dif_not_winning_val])
+                    polls_after[min_dif_not_winning_ind] += 1
+        else:
+            # If winning, put effort in the districts where winning with the smallest margin:
+            min_dif_winning_val = min([i for i in polls_after if i >= 0])
+            if (polls_after == min_dif_winning_val).sum() == 1:
+                min_dif_winning_ind = rn.choice([i for i in range(number_of_districts) if abs(polls_after[i]) == min_dif_winning_val])
+                polls_after[min_dif_winning_ind] += 1
+
+    polls_after = polls_after * -1
+    
+    return strat_min_losing_and_defend_lead(polls_after, effort)
+
 
 # Use to test smth vs a player that does nothing.
 def strat_zero(polls, effort):
