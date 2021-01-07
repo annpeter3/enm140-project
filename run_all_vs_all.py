@@ -5,16 +5,17 @@ import matplotlib.pyplot as plt
 
 import campaign
 import strategies
+import districtbuilder as db
 
 logging.basicConfig(level=logging.INFO, format='%(message)s') # change between logging.DEBUG and logging.INFO for messages or not
 
 ######### Parameters ######################
-effort_per_week = 3             # The amount of effort each campaign can allocate in a week.
-number_of_weeks = 5             # The number of Allocation phases until the winner is declared.
-number_of_districts = 10        # The number of voting districts
+effort_per_week = 30             # The amount of effort each campaign can allocate in a week.
+number_of_weeks = 15             # The number of Allocation phases until the winner is declared.
+number_of_districts = 15        # The number of voting districts
 T = 100                           # The number of times the simulation is repeated
 
-initial_districts = np.array([5, 4, 3, 2, 1, -1, -2, -3, -4, -5])   # This variable counts the number of votes that player 1 has in each district 
+initial_districts = db.build(number_of_districts, 'stair', 10)   # This variable counts the number of votes that player 1 has in each district 
                                                             # minus the votes needed for a draw in a district.
                                                             # Hence a positive number means that player one wins the district
                                                             # This is could be a set of states where voter support is to 10-0, 9-1, 8-2, 7-3, 6-4, 4-6, 3-7.. etc 
@@ -96,37 +97,52 @@ if __name__ == "__main__":
     x = np.arange(len(labels))
     width = 0.2
 
+    # Font sizes:
+    plt.rc('font', size=12)          
+    plt.rc('axes', titlesize=15)     
+    plt.rc('axes', labelsize=18)    
+    plt.rc('xtick', labelsize=18)   
+    plt.rc('ytick', labelsize=12)    
+    plt.rc('legend', fontsize=12)    
+    plt.rc('axes', titlesize=25)
+
     fig, ax = plt.subplots()
     rects1 = ax.bar(x - width, wins, width, label='Wins')
-    rects3 = ax.bar(x, draws, width, label='Draws')
+    rects3 = ax.bar(x, draws, width, label='Draws', tick_label = list(labels))
     rects2 = ax.bar(x + width, losses, width, label='Losses')
 
     # Remove x-ticks:
-    plt.tick_params(
-        axis='x',
-        which='both',
-        bottom=False,
-        top=False,
-        labelbottom=False
-    )
+    # plt.tick_params(
+    #     axis='x',
+    #     which='both',
+    #     bottom=False,
+    #     top=False,
+    #     labelbottom=False
+    # )
 
+    plt.xticks(rotation=50)
+    for label in ax.get_xmajorticklabels():
+        label.set_horizontalalignment("right")
+    fig.subplots_adjust(bottom=0.3)
+
+    ax.set_ylim(0,880)
     ax.legend()
 
-    mean_payoff = np.around(mean_payoff, decimals=3)
+    mean_payoff = np.around(mean_payoff, decimals=2)
 
     # Add the mean payoffs to the plot:
     table = plt.table(cellText=[mean_payoff],
-                        colLabels=list(labels),
+                        #colLabels=list(labels),
                         rowLabels=['Mean payoff'],
                         rowColours=['lightgray'],
-                        colColours=len(mean_payoff)*['lightgray'],
+                        #colColours=len(mean_payoff)*['lightgray'],
                         cellLoc='center',
-                        loc='bottom')
+                        loc='top')
     table.scale(1, 1.5)
     table.auto_set_font_size(False)
     table.set_fontsize(15)
-    plt.subplots_adjust(left=0.2, bottom=0.2)
+    plt.subplots_adjust(bottom=0.3)
 
-    plt.title('Results per strategy')
+    plt.title('Results per strategy', y = 1.1)
 
     plt.show()
