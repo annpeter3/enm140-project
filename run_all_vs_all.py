@@ -44,7 +44,7 @@ def run_all_vs_all_fcn(strategies_dict, effort_per_week, number_of_weeks, number
     
             # Run campaign:
             for t in range(number_of_weeks):
-                districts = campaign.apply_strategy(districts, t, effort_per_week, p1_strat, p2_strat)
+                districts = campaign.apply_strategy(districts, t, effort_per_week, p1_strat, p2_strat, 5)
     
             # Hold election
             result = campaign.declare_winner(districts)

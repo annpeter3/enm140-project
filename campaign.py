@@ -7,8 +7,10 @@ def apply_strategy(districts, week, effort, strat_p1, strat_p2, measurement_erro
         p1effort = player1_allocate(districts, effort, strat_p1)
         p2effort = player2_allocate(districts, effort, strat_p2)
     else:
-        p1effort = player1_allocate(apply_measurement_error(districts, measurement_error), effort, strat_p1)
-        p2effort = player2_allocate(apply_measurement_error(districts, measurement_error), effort, strat_p2)
+        polls_adjusted1 = apply_measurement_error(districts, measurement_error)
+        polls_adjusted2 = apply_measurement_error(districts, measurement_error)
+        p1effort = player1_allocate(polls_adjusted1, effort, strat_p1)
+        p2effort = player2_allocate(polls_adjusted2, effort, strat_p2)
 
     districts = districts + p1effort + p2effort
 
